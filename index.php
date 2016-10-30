@@ -15,13 +15,20 @@
         <title> Home Page</title>
 
     </head>
-        <div id="menu">
-            <ul>
-                <li class ="Home"> <a href="index.php"> Home</a> </li>
-                <li><a href=""></a> </li>
-            </ul>
-        </div>
+
     <body>
+        <form>
+
+            Search Profile<input type ="text"> <br>
+            
+            <fieldset>
+                <legend>Login:</legend>
+                E-mail:<input type ="text"> <br>
+                Password:<input type ="text"><br>
+                <button type ="button">Login</button>
+                <button type ="button">Create an Account</button>
+            </fieldset>
+        </form>
 
     </body>
 </html>
