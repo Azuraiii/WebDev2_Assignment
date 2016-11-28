@@ -40,14 +40,15 @@
 
 require_once("config.php");
 session_start();
+echo mysqli_connect_error();
 
-if(isset($_POST['submit'])){
+/*if(isset($_POST['submit'])){
 
-    $username = mysql_real_escape_string($_POST['username']);
-    $password = mysql_real_escape_string($_POST['password']);
+    $username = mysql_real_escape_string($_POST['Username']);
+    $password = mysql_real_escape_string($_POST['Password']);
 
     //sql and query for login
-    $sql = "SELECT * FROM sticky_notes WHERE username LIKE '$username' AND password LIKE '$password'";
+    $sql = "SELECT * FROM WebDevBlog WHERE Username LIKE '$username' AND Password LIKE '$password'";
     $result = mysqli_query($conn, $sql);
 
     //if user successfully logs in go to profile page
@@ -61,7 +62,7 @@ if(isset($_POST['submit'])){
     }
 
 }
-mysqli_close($conn);
+mysqli_close($conn);*/
 
 ?>
 
