@@ -1,36 +1,103 @@
+<?php require 'config.php'; ?>
+
 <?php
-/**
- * Created by PhpStorm.
- * User: azkei
- * Date: 28/11/2016
- * Time: 20:32
- */
-//**********************************************
-//Step 1: CREATE REGISTER FORM FIELDS
-//Step 2: TAKE FORM FIELDS FROM USER AND POST TO DATABASE TABLE
-//Step 3: INFORM USER THAT THEIR ACCOUNT HAS BEEN CREATED
-//Step 4: FORM VALIDATION
-//**********************************************
+//if the form has been submitted then the field values
+//are placed into the following variables
+//used to check if all the required fields have been validated and filled in before submitting
+$isOkay = 1;
+$usernameErr = $passwordErr = $nameErr = $emailErr = "";
+$username = $password = $name = $email = "";
 
-require_once("config.php");
-session_start();
+if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-//STEP 2:
-$sqlinsert = "INSERT INTO users(username,password,name,email) VALUES ('$username','$password','$name','$email')";
-$result = mysqli_query($conn,$sqlinsert)
+    //checks the username field
+    if(empty($_POST["username"])){
+        $isOkay = 0;
+        $usernameErr = "username is required";
+    }
+    else{
+        $isOkay = 1;
+        $username = test_input($_POST["username"]);
+    }
+
+    //checks the password field
+    if(empty($_POST["password"])){
+        $isOkay = 0;
+        $passwordErr = "password is required";
+    }
+    else{
+        $isOkay = 1;
+        $password = test_input($_POST["password"]);
+    }
+
+    //checks the users name entered
+    if(empty($_POST["name"])){
+        $isOkay = 0;
+        $nameErr = "name is required";
+    }
+    else{
+        $isOkay = 1;
+        $name = test_input($_POST["name"]);
+    }
+
+    //checks the email entered
+    if(empty($_POST["email"])){
+        $isOkay = 0;
+        $emailErr = "email is required";
+    }
+    else{
+        $isOkay = 1;
+        $email = test_input($_POST["email"]);
+
+        //checks if email is valid
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $isOkay = 0;
+            $emailErr = "Invalid email format";
+        }
+        if($isOkay === 1){
+            // a session is started for the user
+            session_start();
+
+            //write a query to insert the values into the user table
+            $sql = $conn->query("INSERT INTO users(Username, Password, Name, Email)
+				values('{$username}', '{$password}', '{$name}', '{$email}')") or die("data insert failed");
+
+            header('LOCATION: login.php');
+        }
+    }
+}
+
+//checks the input and trims any unneccesary characters
+function test_input($data){
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
 ?>
-
-<!DOCTYPE_HTML>
 <html>
-    <title>Register Page</title>
-</html>
+<body>
+<?php
 
-<div>
-    //Step1: TAKES INPUT FROM USER
-    <form method = "post" action ="register.php">
-        <input type="text" name="username" placeholder = "Username"> <br>
-        <input type="password" name="password" placeholder = "Password"> <br>
-        <input type="text" name="name" placeholder = "Name"> <br>
-        <input type="text" name="email" placeholder = "E-Mail"> <br>
-    </form>
-</div>
+
+?>
+<h1>Registration Page</h1>
+<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+    Username: <input type="text" name="username" id="username">
+    <span class="error">* <?php echo $usernameErr;?></span>
+    <br><br>
+    Password: <input type="password" name="password" id="password">
+    <span class="error">* <?php echo $passwordErr;?></span>
+    <br><br>
+    Name: <input type="text" name="name" id="name">
+    <span class="error">* <?php echo $nameErr;?></span>
+    <br><br>
+    Email: <input type="text" name="email" id="email">
+    <span class="error">* <?php echo $emailErr;?></span>
+    <br><br>
+    <input type="submit" name="submit" value="submit">
+</form>
+<?php
+?>
+</body>
+</html>

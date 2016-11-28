@@ -6,13 +6,13 @@
 //**********************************************
 
 $servername = "localhost";
-$username = "root";
-$password = "";
+$usernameDB = "root";
+$passwordDB = "";
 $dbname = "WebDevBlog";
 
 //1.CONNECT TO MYSQL DATABASE
 //IF CONNECTION TO DATABASE FAILS, THROW ERROR
-$conn = @mysqli_connect($servername,$username.$password) or die("Could not connect to MySQL" . mysqli_connect_error());
+$conn = @mysqli_connect($servername,$usernameDB,$passwordDB) or die("Could not connect to MySQL" . mysqli_connect_error());
 
 //2.CREATE DATABASE
 $sqlcreate = "CREATE DATABASE IF NOT EXISTS WebDevBlog";
@@ -29,12 +29,12 @@ mysqli_select_db($conn,$dbname);
 //3.CREATE TABLE
 //USERS TABLE
 $sqltable = "CREATE TABLE IF NOT EXISTS `users` (
-  			`ID` int(11) NOT NULL,
-  			`Username` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
-  			`Password` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
-  			`Name` text COLLATE utf8_unicode_ci,
-  			`Email` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL
-			) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+  			`ID` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  			`Username` varchar(30) NOT NULL,
+  			`Password` varchar(30) NOT NULL,
+  			`Name` text NOT NULL,
+  			`Email` varchar(30) NOT NULL
+			)";
 //ERROR CHECKING FOR CREATING TABLE
 if($conn->query($sqltable) === false) {
     die("Error creating table users" . $conn->error);
