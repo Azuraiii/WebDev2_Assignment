@@ -1,67 +1,68 @@
 <!DOCTYPE html>
 <?php
-$username = $password= $password_confirmation = "";
-$usernameErr = $passwordErr = $password_confirmationErr = "";
+require_once ('config.php');
 
-$submitCounter = 0;
+/**
+ * Created by PhpStorm.
+ * User: azkei
+ * Date: 01/12/2016
+ * Time: 15:22
+ */
 
-if($_SERVER["REQUEST_METHOD"] == "POST"){
+    $username = $password = "";
+    $usernameErr = $passwordErr = "";
+    $twofieldserror = "";
+
+    $submit = 0;
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($_POST["username"])) {
         $usernameErr = "Username is required";
     } else {
-        $username = test_input($_POST["username"]);
+
         // check if name only contains letters and whitespace
-        if (!preg_match("/^[a-zA-Z ]*$/",$username)) {
+        if (!preg_match("/^[a-zA-Z ]*$/", $username)) {
             $usernameErr = "Only letters and white space allowed";
+        } else {
+            $username = test_input($_POST["username"]);
+            $submit += 1;
         }
-        $submitCounter++;
     }
 
-    if(empty($_POST["password"])){
+    if (empty($_POST["password"])) {
         $passwordErr = "Password is required";
-    }else{
-        $password = test_input($_POST["password"]);
+    } else {
         // check if name only contains letters and whitespace
-        if (!preg_match("/^[a-zA-Z ]*$/",$password)) {
+        if (!preg_match("/^[a-zA-Z ]*$/", $password)) {
             $passwordErr = "Only letters and white space allowed";
+        } else {
+            $password = test_input($_POST["password"]);
+            $submit += 1;
         }
-        $submitCounter++;
     }
 
-    if(empty($_POST["password_confirmation"])){
-        $password_confirmationErr = "Password Check is required";
-    }else{
-        $password_confirmation = test_input($_POST["password_confirmation"]);
-        // check if name only contains letters and whitespace
-        if (!preg_match("/^[a-zA-Z ]*$/",$password_confirmation)) {
-            $password_confirmationErr = "Only letters and white space allowed";
+    if ($submit == 2) {
+        $sql = "INSERT INTO users(Username,Password) VALUES('$username','$password')";
+
+        if (!mysqli_query($conn, $sql)) {
+            echo 'Not Inserted';
+        } else {
+            echo("<SCRIPT LANGUAGE='JavaScript'>
+                        window.alert('Account created successfully')
+                        window.location.href='index.php';
+                        </SCRIPT>");
         }
-        $submitCounter++;
-    }
-
-    if($submitCounter == 3){
-        //Insert into DB here
-        // a session is started for the user
-        session_start();
-
-        //write a query to insert the values into the user table
-        $sql = $conn->query("INSERT INTO users(Username, Password)
-				values('{$username}', '{$password}'") or die("data insert failed");
-        $result = mysqli_query($conn, $sql);
         mysqli_close($conn);
-        echo ("<SCRIPT LANGUAGE='JavaScript'>
-					window.alert('Account created successfully')
-					window.location.href='index.php';
-					</SCRIPT>");
-        header('LOCATION: index.php');
+    } else {
+        $twofieldserror = "You need to fill out those 2 fields";
     }
-}
 
-function test_input($data){
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
+    function test_input($data)
+    {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
+    }
 }
 ?>
 <html lang="en">
@@ -102,17 +103,14 @@ function test_input($data){
     			<h2>Sign up</h2>
 
     			<hr align="center" width="50%">
-                <form method="POST" action ="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-                        <input class="input_box" type="text" name="username" id="username" placeholder="Enter your username" value="<?php echo $username;?>">
+                <form method="POST" action="index.php">
+                        <input class="input_box" type="text" name="username" id="username" placeholder="Enter your username"">
                         <span class="error">* <?php echo $usernameErr;?></span>
                         <br><br>
-                        <input class="input_box" type="password" name="password" id="password" placeholder="Enter your password" value="<?php echo $password;?>">
+                        <input class="input_box" type="password" name="password" id="password" placeholder="Enter your password">
                         <span class="error">* <?php echo $passwordErr;?></span>
                         <br><br>
-                        <input class="input_box" type="password" name="password_confirmation" id ="password_confirmation" placeholder="Re-enter your password" value="<?php echo $password_confirmation;?>">
-                        <span class="error">* <?php echo $password_confirmationErr;?></span>
-                        <br><br>
-
+                    <span class="error">* <?php echo $twofieldserror;?></span>
                     <div class="submitWrapper">
                         <button class="form_button" type ="submit" name="register" value="Register">Register</button>
                         <hr align="center" width="50%">
